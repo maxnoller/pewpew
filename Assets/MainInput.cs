@@ -62,6 +62,33 @@ public partial class @MainInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""ca764eef-cde5-490c-a1b5-68877a2302e0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PrimaryMouse"",
+                    ""type"": ""Button"",
+                    ""id"": ""6dd9ee4d-4c08-48c4-a27b-aecb9cdf4c4f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SecondaryMouse"",
+                    ""type"": ""Button"",
+                    ""id"": ""9e83825e-a5c6-47af-96ce-4c0245e25b22"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -152,6 +179,39 @@ public partial class @MainInput : IInputActionCollection2, IDisposable
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b8e4e8d4-4fb2-41da-b8e5-c2c58b685c3e"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7a40c376-7cab-4db8-bb94-db91cafbbbf3"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PrimaryMouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bde8e4fb-0322-4f7c-8846-2248922e976b"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryMouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +224,9 @@ public partial class @MainInput : IInputActionCollection2, IDisposable
         m_Foot_Run = m_Foot.FindAction("Run", throwIfNotFound: true);
         m_Foot_Crouch = m_Foot.FindAction("Crouch", throwIfNotFound: true);
         m_Foot_Look = m_Foot.FindAction("Look", throwIfNotFound: true);
+        m_Foot_Jump = m_Foot.FindAction("Jump", throwIfNotFound: true);
+        m_Foot_PrimaryMouse = m_Foot.FindAction("PrimaryMouse", throwIfNotFound: true);
+        m_Foot_SecondaryMouse = m_Foot.FindAction("SecondaryMouse", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -227,6 +290,9 @@ public partial class @MainInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_Foot_Run;
     private readonly InputAction m_Foot_Crouch;
     private readonly InputAction m_Foot_Look;
+    private readonly InputAction m_Foot_Jump;
+    private readonly InputAction m_Foot_PrimaryMouse;
+    private readonly InputAction m_Foot_SecondaryMouse;
     public struct FootActions
     {
         private @MainInput m_Wrapper;
@@ -235,6 +301,9 @@ public partial class @MainInput : IInputActionCollection2, IDisposable
         public InputAction @Run => m_Wrapper.m_Foot_Run;
         public InputAction @Crouch => m_Wrapper.m_Foot_Crouch;
         public InputAction @Look => m_Wrapper.m_Foot_Look;
+        public InputAction @Jump => m_Wrapper.m_Foot_Jump;
+        public InputAction @PrimaryMouse => m_Wrapper.m_Foot_PrimaryMouse;
+        public InputAction @SecondaryMouse => m_Wrapper.m_Foot_SecondaryMouse;
         public InputActionMap Get() { return m_Wrapper.m_Foot; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -256,6 +325,15 @@ public partial class @MainInput : IInputActionCollection2, IDisposable
                 @Look.started -= m_Wrapper.m_FootActionsCallbackInterface.OnLook;
                 @Look.performed -= m_Wrapper.m_FootActionsCallbackInterface.OnLook;
                 @Look.canceled -= m_Wrapper.m_FootActionsCallbackInterface.OnLook;
+                @Jump.started -= m_Wrapper.m_FootActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_FootActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_FootActionsCallbackInterface.OnJump;
+                @PrimaryMouse.started -= m_Wrapper.m_FootActionsCallbackInterface.OnPrimaryMouse;
+                @PrimaryMouse.performed -= m_Wrapper.m_FootActionsCallbackInterface.OnPrimaryMouse;
+                @PrimaryMouse.canceled -= m_Wrapper.m_FootActionsCallbackInterface.OnPrimaryMouse;
+                @SecondaryMouse.started -= m_Wrapper.m_FootActionsCallbackInterface.OnSecondaryMouse;
+                @SecondaryMouse.performed -= m_Wrapper.m_FootActionsCallbackInterface.OnSecondaryMouse;
+                @SecondaryMouse.canceled -= m_Wrapper.m_FootActionsCallbackInterface.OnSecondaryMouse;
             }
             m_Wrapper.m_FootActionsCallbackInterface = instance;
             if (instance != null)
@@ -272,6 +350,15 @@ public partial class @MainInput : IInputActionCollection2, IDisposable
                 @Look.started += instance.OnLook;
                 @Look.performed += instance.OnLook;
                 @Look.canceled += instance.OnLook;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
+                @PrimaryMouse.started += instance.OnPrimaryMouse;
+                @PrimaryMouse.performed += instance.OnPrimaryMouse;
+                @PrimaryMouse.canceled += instance.OnPrimaryMouse;
+                @SecondaryMouse.started += instance.OnSecondaryMouse;
+                @SecondaryMouse.performed += instance.OnSecondaryMouse;
+                @SecondaryMouse.canceled += instance.OnSecondaryMouse;
             }
         }
     }
@@ -282,5 +369,8 @@ public partial class @MainInput : IInputActionCollection2, IDisposable
         void OnRun(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
+        void OnPrimaryMouse(InputAction.CallbackContext context);
+        void OnSecondaryMouse(InputAction.CallbackContext context);
     }
 }

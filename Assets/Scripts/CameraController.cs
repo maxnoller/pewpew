@@ -6,49 +6,49 @@ using Cinemachine;
 
 public class CameraController : NetworkBehaviour
 {
-    [Header("Camera")]
-    [SerializeField]
-    private CinemachineVirtualCamera virtualCamera;
-    [SerializeField]private Vector2 maxFollowOffset = new Vector2(-1f, 6f);
-    [SerializeField]private Vector2 cameraVelocity = new Vector2(4f, 0.25f);
-    [SerializeField]private Transform playerTransform;
-    private CinemachineTransposer transposer;
+    [SerializeField]GameObject mainCamera;
+    [SerializeField]float mouseSensitivity = 1f;
+    [SerializeField]float maxRotation = 50f;
+    private float currentXRotation = 0;
+    private float currentYRotation = 0;
 
-    private MainInput input;
-    private MainInput Input {
-        get {
-            if(input != null) {return input;}
-            return input = new MainInput();
-        }
+    private Vector2 currentRotation;
+    MainInput input;
+    void Awake(){
+        input = new MainInput();
+
+        input.Foot.Look.performed += ctx => {
+            currentRotation = ctx.ReadValue<Vector2>();
+        };
     }
 
-    public override void OnNetworkSpawn(){
-        transposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
-        virtualCamera.gameObject.SetActive(true);
+    void Update(){
+        ChangeRotation(currentRotation);
+    }
 
+	public override void OnNetworkSpawn()
+	{
         enabled = true;
-        Input.Foot.Look.performed += ctx => Look(ctx.ReadValue<Vector2>());
-    }  
+        if(IsLocalPlayer)
+            mainCamera.SetActive(true);
+	}
+
     void OnEnable(){
         if(IsLocalPlayer)
-            Input.Enable();
+            input.Foot.Enable();
     }
+
     void OnDisable(){
         if(IsLocalPlayer)
-            Input.Disable();
+            input.Foot.Disable();
     }
 
-    private void Look(Vector2 lookAxis){
-        float deltaTime = Time.deltaTime;
-        float followOffset = Mathf.Clamp(
-            transposer.m_FollowOffset.y - (lookAxis.y * cameraVelocity.y * deltaTime),
-            maxFollowOffset.x,
-            maxFollowOffset.y
-        );
-
-        transposer.m_FollowOffset.y = followOffset;
-        playerTransform.Rotate(0f, lookAxis.x * cameraVelocity.x * deltaTime, 0f);
-        
-
+    void ChangeRotation(Vector2 mouseInput){
+        if(currentRotation == null) { return; }
+        currentXRotation -= mouseInput.y*mouseSensitivity;
+        currentYRotation += mouseInput.x * mouseSensitivity;
+        currentXRotation = Mathf.Clamp(currentXRotation, -maxRotation, maxRotation);
+        mainCamera.transform.rotation = Quaternion.Euler(currentXRotation, currentYRotation, 0);
+        transform.rotation = Quaternion.Euler(0, currentYRotation, 0);
     }
 }
